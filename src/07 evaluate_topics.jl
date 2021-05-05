@@ -123,6 +123,6 @@ function saveMAGHits(fileName::String, phrasePairs::Vector{Tuple{String,String}}
     close(file)
 end
 
-phrasePairs = loadPhrasePairs("DATR/workspace/NIPS.Top100Topics.txt")
+phrasePairs = loadPhrasePairs("DualAspectTopicRepresentation/workspace/NIPS.Top100Topics.txt")
 magHits = countMAGHits(phrasePairs)
-saveMAGHits("DATR/workspace/NIPS.Top100Topics.MAGHits.txt", phrasePairs, magHits)
+saveMAGHits("DualAspectTopicRepresentation/workspace/NIPS.Top100Topics.MAGHits.txt", phrasePairs, magHits)

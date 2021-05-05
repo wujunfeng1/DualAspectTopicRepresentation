@@ -292,6 +292,6 @@ end
 
 numTopics = 100
 maxIter = 30
-btm = newBTM("DATR/workspace/NIPS.w2v.training.txt", numTopics, maxIter, 2.0, 0.005)
-#saveBTM("DATR/workspace/NIPS.btm.txt", btm)
-trainBTM!(btm, "DATR/workspace/NIPS.btm.txt")
+btm = newBTM("DualAspectTopicRepresentation/workspace/NIPS.w2v.training.txt", numTopics, maxIter, 2.0, 0.005)
+#saveBTM("DualAspectTopicRepresentation/workspace/NIPS.btm.txt", btm)
+trainBTM!(btm, "DualAspectTopicRepresentation/workspace/NIPS.btm.txt")

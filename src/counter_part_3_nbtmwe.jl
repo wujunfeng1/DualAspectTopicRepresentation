@@ -496,9 +496,9 @@ end
 numTopics = 100
 maxIter = 300
 simThres = 0.9
-wordVectors = wordvectors("DATR/workspace/NIPS.w2v.model.txt")
+wordVectors = wordvectors("DualAspectTopicRepresentation/workspace/NIPS.w2v.model.txt")
 nonStopWords, nonStopWordIDs = getNonStopWords(wordVectors)
 vectors = normalizeVectors(wordVectors, nonStopWords)
-btm = newNBTMWE("DATR/workspace/NIPS.w2v.training.txt", nonStopWords, vectors, numTopics, maxIter, simThres, 2.0, 0.005)
-#saveBTM("DATR/workspace/NIPS.btm.txt", btm)
-trainNBTMWE!(btm, "DATR/workspace/NIPS.nbtmwe.txt")
+btm = newNBTMWE("DualAspectTopicRepresentation/workspace/NIPS.w2v.training.txt", nonStopWords, vectors, numTopics, maxIter, simThres, 2.0, 0.005)
+#saveBTM("DualAspectTopicRepresentation/workspace/NIPS.btm.txt", btm)
+trainNBTMWE!(btm, "DualAspectTopicRepresentation/workspace/NIPS.nbtmwe.txt")

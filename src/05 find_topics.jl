@@ -321,12 +321,12 @@ end
 
 maxIter = 1000
 maxPairsInGroup = 10000
-nonStopWords, nonStopWordIDs = loadNonStopWords("DATR/workspace/NIPS.nonStopWords.txt")
-dualAspectPairFreqs = loadDualAspectPairFreqs("DATR/workspace/NIPS.DAPairFreq.txt")
-sparseConns = loadConns("DATR/workspace/NIPS.DAPairConns.txt", length(dualAspectPairFreqs))
-aspect1, aspectIDs1 = loadAspects("DATR/workspace/NIPS.aspects.1.txt", nonStopWordIDs)
-aspect2, aspectIDs2 = loadAspects("DATR/workspace/NIPS.aspects.2.txt", nonStopWordIDs)
-aspect3, aspectIDs3 = loadAspects("DATR/workspace/NIPS.aspects.3.txt", nonStopWordIDs)
+nonStopWords, nonStopWordIDs = loadNonStopWords("DualAspectTopicRepresentation/workspace/NIPS.nonStopWords.txt")
+dualAspectPairFreqs = loadDualAspectPairFreqs("DualAspectTopicRepresentation/workspace/NIPS.DAPairFreq.txt")
+sparseConns = loadConns("DualAspectTopicRepresentation/workspace/NIPS.DAPairConns.txt", length(dualAspectPairFreqs))
+aspect1, aspectIDs1 = loadAspects("DualAspectTopicRepresentation/workspace/NIPS.aspects.1.txt", nonStopWordIDs)
+aspect2, aspectIDs2 = loadAspects("DualAspectTopicRepresentation/workspace/NIPS.aspects.2.txt", nonStopWordIDs)
+aspect3, aspectIDs3 = loadAspects("DualAspectTopicRepresentation/workspace/NIPS.aspects.3.txt", nonStopWordIDs)
 regions0 = [[i for i in 1:length(dualAspectPairFreqs)]]
 regions1 = divideGroups(dualAspectPairFreqs, regions0, aspectIDs3, maxPairsInGroup)
 regions2 = divideGroups(dualAspectPairFreqs, regions1, aspectIDs2, maxPairsInGroup)
@@ -345,4 +345,4 @@ for (iRegion, region) in enumerate(regions3)
         push!(topics, topic)
     end
 end
-saveTopics("DATR/workspace/NIPS.topics.txt", topics, nonStopWords, dualAspectPairFreqs)
+saveTopics("DualAspectTopicRepresentation/workspace/NIPS.topics.txt", topics, nonStopWords, dualAspectPairFreqs)

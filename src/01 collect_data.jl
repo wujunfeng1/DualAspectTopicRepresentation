@@ -25,7 +25,7 @@ tableElem = Element(session, "css selector", "div.col-sm")
 linkElems = Elements(tableElem, "css selector", "a")
 links = [element_attr(linkElem, "href") for linkElem in linkElems]
 
-file = open("DATR/data/NIPS.txt", "w")
+file = open("DualAspectTopicRepresentation/data/NIPS.txt", "w")
 for url in links
     textOfYear = split(url,"/")[end]
     navigate!(session, url)

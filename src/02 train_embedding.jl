@@ -1,98 +1,8 @@
 using TextAnalysis
 using Word2Vec
-
-function loadTitles(fileName::String)::Vector{String}
-    titles = Vector{String}()
-    file = open(fileName)
-    for line in readlines(file)
-        if line == ""
-            continue
-        end
-        title = split(line, ". ")[end]
-        push!(titles, title)
-    end
-    titles
-end
-
-struct StemmedToken
-    text::String
-    stemmed::Vector{String} 
-end
-
-function unhyphenAndStem(stemmer::Stemmer, toks::Vector{String})::Vector{StemmedToken}
-    result = Vector{StemmedToken}()
-    for tok in toks
-        if tok == ""
-            continue
-        end
-        tok = replace(tok, "/" => "-or-")
-        while startswith(tok, "-")
-            tok = tok[2:end]
-        end
-        while endswith(tok, "-")
-            tok = tok[1:end - 1]
-        end
-        subToks = split(tok, "-")
-        stemmedToken = StemmedToken(tok, stem(stemmer, subToks))
-        push!(result, stemmedToken)
-    end
-    result
-end
-
-IDPair = Tuple{Int32,Int32}
-IDPostfixes = Set{Vector{Int32}}
-
-function getVocab(tokGroups::Vector{Vector{StemmedToken}})::Tuple{Dict{String,Int32},Dict{IDPair,IDPostfixes},Vector{Vector{Int32}}}
-    vocab = Dict{String,Int32}()
-    strongLinkForest = Dict{IDPair,IDPostfixes}()
-    numGroups = length(tokGroups)
-    tokIDGroups = Vector{Vector{Int32}}(undef, numGroups)
-    for (groupID, tokGroup) in enumerate(tokGroups)
-        tokIDGroup = Vector{Int32}()
-        for stemmedToken in tokGroup
-            for subtok in stemmedToken.stemmed
-                if haskey(vocab, subtok)
-                    push!(tokIDGroup, vocab[subtok])
-                    continue
-                end
-                subtokID = length(vocab) + 1
-                vocab[subtok] = subtokID
-                push!(tokIDGroup, subtokID)
-            end
-            numSubToks = length(stemmedToken.stemmed)
-            if numSubToks > 1
-                idPair = (tokIDGroup[end - numSubToks + 1], tokIDGroup[end - numSubToks + 2])
-                postfix = tokIDGroup[end - numSubToks + 3:end]
-                if !haskey(strongLinkForest, idPair)
-                    strongLinkForest[idPair] = IDPostfixes()
-                end
-                push!(strongLinkForest[idPair], postfix)
-            end
-        end
-        tokIDGroups[groupID] = tokIDGroup 
-    end
-    vocab, strongLinkForest, tokIDGroups
-end
-
-function saveTrainingFile(fileName::String, tokIDGroups::Vector{Vector{Int32}}, vocab::Dict{String,Int32})
-    numPhrases = length(vocab)
-    phrases = Vector{String}(undef, numPhrases)
-    for (phrase, phraseID) in vocab
-        phrases[phraseID] = phrase 
-    end
-    file = open(fileName, "w")
-    for tokIDGroup in tokIDGroups
-        text = ""
-        for tokID in tokIDGroup
-            text *= " " * phrases[tokID]
-        end
-        if length(text) > 0
-            text = text[2:end]
-        end
-        println(file, text)
-    end
-    close(file)
-end
+include("x1 io.jl")
+include("x2 preprocessing.jl")
+include("x3 aspect_aware_word_embedding.jl")
 
 function mergeWithStrongLinks!(tokIDGroups::Vector{Vector{Int32}}, vocab::Dict{String,Int32}, strongLinkForest::Dict{IDPair,IDPostfixes})
     # insert strong-link phrases into vocab
@@ -177,77 +87,6 @@ function mergeWithStrongLinks!(tokIDGroups::Vector{Vector{Int32}}, vocab::Dict{S
         tokIDGroups[groupID] = newTokIDGroup    
     end
 end
-
-const stopWords = Set{String}([
-    "a",
-	"an",
-	"and",
-	"as",
-	"based",
-	"by",
-	"for",
-	"from",
-	"in",
-	"on",
-	"of",
-    "over",
-	"that",
-	"the",
-	"this",
-	"to",
-	"via",
-	"with",
-	"without",
-	"is",
-	"are",
-	"be",
-	"you",
-	"we",
-	"they",
-	"it",
-	"your",
-	"our",
-	"their",
-	"its",
-	"what",
-	"when",
-	"where",
-	"how",
-	"do",
-	"use",
-	"here",
-	"there",
-	"using",
-    "than",
-	"、",
-	",",
-	"，",
-	":",
-	"：",
-	".",
-	"。",
-	"‧",
-	"!",
-	"！",
-	"?",
-	"？",
-	";",
-	"；",
-	"(",
-	"（",
-	")",
-	"）",
-	"'",
-	"‘",
-	"’",
-	"\"",
-	"「",
-	"」",
-	"“",
-	"”",
-	"`",
-	"…",
-])
 
 function word2Phrase!(tokIDGroups::Vector{Vector{Int32}}, vocab::Dict{String,Int32}, maxIter::Int, minFreq::Int)
     # scan through tokIDGroups to build unigram freqs and bigram freqs
@@ -443,6 +282,9 @@ function detectPhrases(titles::Vector{String}, fileName::String)
     saveTrainingFile(fileName, tokIDGroups, vocab)
 end
 
-nipsTitles = loadTitles("DATR/data/NIPS.txt")
-detectPhrases(nipsTitles, "DATR/workspace/NIPS.w2v.training.txt")
-word2vec("DATR/workspace/NIPS.w2v.training.txt", "DATR/workspace/NIPS.w2v.model.txt", size=200, iter=100, min_count=3, verbose=true)
+nipsTitles = loadTitles("DualAspectTopicRepresentation/data/NIPS.txt")
+detectPhrases(nipsTitles, "DualAspectTopicRepresentation/workspace/NIPS.awe.training.txt")
+trainWordEmbedding(
+    "DualAspectTopicRepresentation/workspace/NIPS.awe.training.txt", 
+    "DualAspectTopicRepresentation/workspace/NIPS.awe.model.txt", 
+    200, 3)

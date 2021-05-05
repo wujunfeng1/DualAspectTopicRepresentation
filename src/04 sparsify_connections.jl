@@ -219,16 +219,16 @@ function saveConns(fileName::String, sparseConns::Vector{Dict{Int,Float64}})
 end
 
 numSingleSideNeighbors = 100
-wordVectors = wordvectors("DATR/workspace/NIPS.w2v.model.txt")
-nonStopWords, nonStopWordIDs = loadNonStopWords("DATR/workspace/NIPS.nonStopWords.txt")
-phraseIDGroups = loadPhraseIDGroups("DATR/workspace/NIPS.w2v.training.txt", nonStopWordIDs)
+wordVectors = wordvectors("DualAspectTopicRepresentation/workspace/NIPS.awe.model.txt")
+nonStopWords, nonStopWordIDs = loadNonStopWords("DualAspectTopicRepresentation/workspace/NIPS.nonStopWords.txt")
+phraseIDGroups = loadPhraseIDGroups("DualAspectTopicRepresentation/workspace/NIPS.awe.training.txt", nonStopWordIDs)
 pairFreqs = getPhrasePairFreqs(nonStopWords, nonStopWordIDs, phraseIDGroups)
 vectors = normalizeVectors(wordVectors, nonStopWords)
 simMat = getSimilarityMatrix(vectors)
-aspects, aspectIDs = loadAspects("DATR/workspace/NIPS.aspects.1.txt", nonStopWordIDs)
+aspects, aspectIDs = loadAspects("DualAspectTopicRepresentation/workspace/NIPS.aspects.1.txt", nonStopWordIDs)
 dualAspectPairFreqs = findDualAspectPairFreqs(pairFreqs, aspectIDs)
-saveDualAspectPairFreqs("DATR/workspace/NIPS.DAPairFreq.txt", dualAspectPairFreqs)
+saveDualAspectPairFreqs("DualAspectTopicRepresentation/workspace/NIPS.DAPairFreq.txt", dualAspectPairFreqs)
 println("sparsifying connections ...")
 sparseConns = sparsifyDualAspectConn(simMat, dualAspectPairFreqs, numSingleSideNeighbors)
-saveConns("DATR/workspace/NIPS.DAPairConns.txt", sparseConns)
+saveConns("DualAspectTopicRepresentation/workspace/NIPS.DAPairConns.txt", sparseConns)
 

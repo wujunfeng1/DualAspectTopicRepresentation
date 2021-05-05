@@ -73,17 +73,17 @@ function loadNormalizedVectors(fileName::String, highFreqPhrases::Vector{String}
     vectors
 end
 
-years = loadYears("DATR/data/NIPS.txt")
+years = loadYears("DualAspectTopicRepresentation/data/NIPS.txt")
 for toYear in 2010:2020
-    generateTemporalTrainFile("DATR/workspace/NIPS.w2v.training.txt", "DATR/workspace/NIPS.w2v.$toYear.txt", years, toYear)
-    word2vec("DATR/workspace/NIPS.w2v.$toYear.txt", "DATR/workspace/NIPS.w2v.model-$toYear.txt", size=200, iter=100, min_count=3, verbose=true)
+    generateTemporalTrainFile("DualAspectTopicRepresentation/workspace/NIPS.w2v.training.txt", "DualAspectTopicRepresentation/workspace/NIPS.w2v.$toYear.txt", years, toYear)
+    word2vec("DualAspectTopicRepresentation/workspace/NIPS.w2v.$toYear.txt", "DualAspectTopicRepresentation/workspace/NIPS.w2v.model-$toYear.txt", size=200, iter=100, min_count=3, verbose=true)
 end
 
-highFreqPhrases = findHighFreqPhrases("DATR/workspace/NIPS.w2v.2015.txt", 5)
+highFreqPhrases = findHighFreqPhrases("DualAspectTopicRepresentation/workspace/NIPS.w2v.2015.txt", 5)
 
 prevRankMat = nothing
 for toYear in [2010, 2020]
-    vectors = loadNormalizedVectors("DATR/workspace/NIPS.w2v.$toYear.txt", highFreqPhrases)
+    vectors = loadNormalizedVectors("DualAspectTopicRepresentation/workspace/NIPS.w2v.$toYear.txt", highFreqPhrases)
     simMat = 0.5 .+ 0.5 .* (vectors' * vectors)
     simVec = simMat[:]
     simRank = sortperm(simVec, rev=true)
